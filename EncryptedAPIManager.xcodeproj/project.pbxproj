@@ -10,6 +10,7 @@
 		F488E00822C0417C00BBC105 /* EncryptedAPIManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F488DFFE22C0417C00BBC105 /* EncryptedAPIManager.framework */; };
 		F488E00D22C0417C00BBC105 /* EncryptedAPIManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F488E00C22C0417C00BBC105 /* EncryptedAPIManagerTests.swift */; };
 		F488E00F22C0417C00BBC105 /* EncryptedAPIManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F488E00122C0417C00BBC105 /* EncryptedAPIManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F488E01922C043D900BBC105 /* EncryptedAPIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F488E01822C043D900BBC105 /* EncryptedAPIManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +30,7 @@
 		F488E00722C0417C00BBC105 /* EncryptedAPIManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EncryptedAPIManagerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F488E00C22C0417C00BBC105 /* EncryptedAPIManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptedAPIManagerTests.swift; sourceTree = "<group>"; };
 		F488E00E22C0417C00BBC105 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F488E01822C043D900BBC105 /* EncryptedAPIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptedAPIManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				F488E00122C0417C00BBC105 /* EncryptedAPIManager.h */,
+				F488E01822C043D900BBC105 /* EncryptedAPIManager.swift */,
 				F488E00222C0417C00BBC105 /* Info.plist */,
 			);
 			path = EncryptedAPIManager;
@@ -148,6 +151,7 @@
 				TargetAttributes = {
 					F488DFFD22C0417C00BBC105 = {
 						CreatedOnToolsVersion = 10.2.1;
+						LastSwiftMigration = 1020;
 					};
 					F488E00622C0417C00BBC105 = {
 						CreatedOnToolsVersion = 10.2.1;
@@ -194,6 +198,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F488E01922C043D900BBC105 /* EncryptedAPIManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +346,7 @@
 		F488E01322C0417C00BBC105 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -358,6 +364,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Home.EncryptedAPIManager;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -366,6 +373,7 @@
 		F488E01422C0417C00BBC105 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -391,6 +399,7 @@
 		F488E01622C0417C00BBC105 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = QZXD2F9AJ3;
 				INFOPLIST_FILE = EncryptedAPIManagerTests/Info.plist;
@@ -409,6 +418,7 @@
 		F488E01722C0417C00BBC105 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = QZXD2F9AJ3;
 				INFOPLIST_FILE = EncryptedAPIManagerTests/Info.plist;
