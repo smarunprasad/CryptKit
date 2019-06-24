@@ -84,10 +84,8 @@ public class EncryptedAPIManager {
         return (isReachable && !needsConnection)
     }
     
-    open func getEncryptedResponseData(url: URL, completionHandler:@escaping ((APIHandler) -> Void)) {
+    open func getEncryptedResponseData(request: URLRequest, completionHandler:@escaping ((APIHandler) -> Void)) {
         
-        var request = URLRequest.init(url: url)
-        request.httpMethod = "get"
         let session = URLSession.shared
         let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
             

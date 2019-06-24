@@ -32,7 +32,10 @@ class EncryptedAPIManagerTests: XCTestCase {
     
     func testEncryptedResponseDataMethodeForValidURL() {
         
-        encryptedAPIManager.getEncryptedResponseData(url: URL.init(string: "https://api.github.com/gists/ac57abaea4faba3e3cb6bf45e733c670")!) { (_ handler) in
+        var request = URLRequest.init(url: URL.init(string: "https://api.github.com/gists/ac57abaea4faba3e3cb6bf45e733c670")!)
+        request.httpMethod = "get"
+        request.httpBody = "iOS".data(using: .utf8)
+        encryptedAPIManager.getEncryptedResponseData(request: request) { (_ handler) in
             
             XCTAssertNotNil(handler.data, "Data should not be nil")
             XCTAssertNil(handler.error, "error should be nil")
@@ -42,9 +45,9 @@ class EncryptedAPIManagerTests: XCTestCase {
                     //It returns the decrypted data for the given encrptedData
                     let decrptedData = try self.encryptedAPIManager.decrypt(encrptedData)
                     do {
-                        let dict = try JSONSerialization.jsonObject(with: decrptedData, options: []) as? [String: Any]
+                        let object = try JSONSerialization.jsonObject(with: decrptedData, options: []) as? String
                         
-                        XCTAssertNotNil(dict, "Dict should not be nil")
+                        XCTAssertNotNil(object, "Dict should not be nil")
                     }
                     catch {
                         
