@@ -16,7 +16,7 @@ class EncryptedAPIManagerTests: XCTestCase {
     override func setUp() {
         
         do {
-            encryptedAPIManager = try EncryptedAPIManager.init(key: "8C182623CD047A0D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7".data(using: .utf8) ?? Data(), iv: "8DB023E39C39B95EBC0155DA9F14C37D".data(using: .utf8) ?? Data())
+            encryptedAPIManager = try EncryptedAPIManager.init(key: "FiugQTgPNwCWUY,VhfmM4cKXTLVFvHFe")
         }
         catch {
             print(error)
@@ -37,9 +37,13 @@ class EncryptedAPIManagerTests: XCTestCase {
         request.httpBody = "iOS".data(using: .utf8)
         encryptedAPIManager.getEncryptedResponseData(request: request) { (_ handler) in
             
+            var handlerData = handler
+            var data = Data(bytes: &handlerData, count: MemoryLayout<APIHandler>.stride)
+            
             XCTAssertNotNil(handler.data, "Data should not be nil")
             XCTAssertNil(handler.error, "error should be nil")
-            
+            XCTAssertNil(data, "data should NOT be nil")
+
             if let encrptedData = handler.data {
                 do {
                     //It returns the decrypted data for the given encrptedData
@@ -92,7 +96,7 @@ class EncryptedAPIManagerTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         
         do {
-            encryptedAPIManager = try EncryptedAPIManager.init(key: "dafqwefgrth".data(using: .utf8) ?? Data(), iv: "8DB023E39C39B95EBC0155DA9F14C37D".data(using: .utf8) ?? Data())
+            encryptedAPIManager = try EncryptedAPIManager.init(key: "dafqwefgrth")
         }
         catch {
             XCTAssertEqual(error.localizedDescription, "badKeyLength", "")
@@ -112,7 +116,7 @@ class EncryptedAPIManagerTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         
         do {
-            encryptedAPIManager = try EncryptedAPIManager.init(key: "8C182623CD047A0D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7".data(using: .utf8) ?? Data(), iv: "8DB023E39C39B95EBC0155DA9F14C37D".data(using: .utf8) ?? Data())
+            encryptedAPIManager = try EncryptedAPIManager.init(key: "FiugQTgPNwCWUY,VhfmM4cKXTLVFvHFe")
         }
         catch {
             print(error)
@@ -130,7 +134,7 @@ class EncryptedAPIManagerTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         
         do {
-            encryptedAPIManager = try EncryptedAPIManager.init(key: "8C182623CD047A4D6593691B2179B98440A91AF01E4BB2BD90D49CC9E9D171E7".data(using: .utf8) ?? Data(), iv: "14C37D8DB023E39C39B95EBC0155DA9F".data(using: .utf8) ?? Data())
+            encryptedAPIManager = try EncryptedAPIManager.init(key: "hfmM4cKXTLVFvHFe")
         }
         catch {
             print(error)
@@ -142,7 +146,6 @@ class EncryptedAPIManagerTests: XCTestCase {
                 
                 do {
                     let _ = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                    
                 }
                 catch {
                     
