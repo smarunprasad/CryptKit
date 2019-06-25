@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:EncryptedAPIManager.xcodeproj">
+      location = "self:/Users/arun/Documents/Arun/FrameWork/EncryptedAPIManager/CryptKit.xcodeproj">
    </FileRef>
 </Workspace>
