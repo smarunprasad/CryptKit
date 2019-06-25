@@ -16,7 +16,7 @@ public protocol Crypter {
     func decrypt(_ encrypted: Data) throws -> Data
 }
 
-class CryptManager {
+public class CryptManager {
     
     //Variables
     var key: Data
@@ -41,13 +41,60 @@ class CryptManager {
         case decryptionFailed
     }
     
+    
+    //Call this methode in your class it will return the data in the encripted formate
+    public func getEncryptedData(data: Data, completionBlock: (Data?) -> Void, errorBlock: (Error) -> Void) {
+        
+        guard !(data.isEmpty) else {
+            errorBlock(Error.encryptionFailed)
+            return
+        }
+        do {
+            //It returns the device data in encrypted formate.
+            do {
+                //To pass the data to encryption.
+                let encrptedData = try self.encrypt(data)
+                completionBlock(encrptedData)
+            }
+            
+        } catch  {
+            
+            errorBlock(Error.encryptionFailed)
+        }
+    }
+    
+    //To decrypt, pass the encrypted value with Key & inputVector values which is used for the encrytion.
+    public func getDecryptedData(encrptedData: Data, completionBlock: (Data?) -> Void, errorBlock: (Error) -> Void) {
+        
+        guard !(encrptedData.isEmpty) else {
+            errorBlock(Error.decryptionFailed)
+            return
+        }
+        
+        do {
+            //It returns the decrypted data for the given encrptedData
+            do {
+                //To pass the data to decryption.
+                let decrptedData = try self.decrypt(encrptedData)
+                completionBlock(decrptedData)
+            }
+
+        } catch  {
+            
+            errorBlock(Error.decryptionFailed)
+        }
+    }
+}
+
+extension CryptManager {
+    
     //MARK: Encrption & Decryption private methods
     
     //Used to encrypt the data
     func localEncrypt(_ data: Data) throws -> Data {
         
         let dataToEncrypt = data
-
+        
         //Creating the Int value from the data & kCCBlockSizeAES128
         let bufferSize: Int = ivSize + dataToEncrypt.count + kCCBlockSizeAES128
         var buffer = Data(count: bufferSize)
@@ -166,51 +213,7 @@ class CryptManager {
             }
         }
     }
-    
-    //Call this methode in your class it will return the data in the encripted formate
-    public func getEncryptedData(data: Data, completionBlock: (Data) -> Void, errorBlock: (Error) -> Void) {
-        
-        guard !(data.isEmpty) else {
-            errorBlock(Error.encryptionFailed)
-            return
-        }
-        do {
-            //It returns the device data in encrypted formate.
-            do {
-                //To pass the data to encryption.
-                let encrptedData = try self.encrypt(data)
-                completionBlock(encrptedData)
-            }
-            
-        } catch  {
-            
-            errorBlock(Error.encryptionFailed)
-        }
-    }
-    
-    //To decrypt, pass the encrypted value with Key & inputVector values which is used for the encrytion.
-    public func getDecryptedData(encrptedData: Data, completionBlock: (Data) -> Void, errorBlock: (Error) -> Void) {
-        
-        guard !(encrptedData.isEmpty) else {
-            errorBlock(Error.decryptionFailed)
-            return
-        }
-        
-        do {
-            //It returns the decrypted data for the given encrptedData
-            do {
-                //To pass the data to decryption.
-                let decrptedData = try self.decrypt(encrptedData)
-                completionBlock(decrptedData)
-            }
-
-        } catch  {
-            
-            errorBlock(Error.decryptionFailed)
-        }
-    }
 }
-
 extension CryptManager: Crypter {
     
     public func encrypt(_ data: Data) throws -> Data {
