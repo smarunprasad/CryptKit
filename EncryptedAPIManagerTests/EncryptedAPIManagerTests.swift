@@ -15,12 +15,6 @@ class EncryptedAPIManagerTests: XCTestCase {
     
     override func setUp() {
         
-        do {
-            encryptedAPIManager = try EncryptedAPIManager.init(key: "FiugQTgPNwCWUY,VhfmM4cKXTLVFvHFe")
-        }
-        catch {
-            print(error)
-        }
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
     
@@ -30,136 +24,144 @@ class EncryptedAPIManagerTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    func testEncryptedResponseDataMethodeForValidURL() {
+    func testForKeyCountIsEmpty() {
         
-        var request = URLRequest.init(url: URL.init(string: "https://api.github.com/gists/ac57abaea4faba3e3cb6bf45e733c670")!)
-        request.httpMethod = "get"
-        request.httpBody = "iOS".data(using: .utf8)
-        encryptedAPIManager.getEncryptedResponseData(request: request) { (_ handler) in
-            
-            var handlerData = handler
-            var data = Data(bytes: &handlerData, count: MemoryLayout<APIHandler>.stride)
-            
-            XCTAssertNotNil(handler.data, "Data should not be nil")
-            XCTAssertNil(handler.error, "error should be nil")
-            XCTAssertNil(data, "data should NOT be nil")
-
-            if let encrptedData = handler.data {
-                do {
-                    //It returns the decrypted data for the given encrptedData
-                    let decrptedData = try self.encryptedAPIManager.decrypt(encrptedData)
-                    do {
-                        let object = try JSONSerialization.jsonObject(with: decrptedData, options: []) as? String
-                        
-                        XCTAssertNotNil(object, "Dict should not be nil")
-                    }
-                    catch {
-                        
-                        XCTAssertNotNil(error, "error should not be nil")
-                    }
-                } catch  {
-                    
-                }
-            }
-        }
-    }
-    
-    func testEncryptionandDecryptionforValidValue() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        
-        encryptedAPIManager.getEncryptedData(data: Data(), completionBlock: { (data) in
-            
-            encryptedAPIManager.getDecryptedData(encrptedData: data, completionBlock: { (data) in
-                
-                do {
-                    let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                    
-                    XCTAssertNotNil(dict, "The value should not be nil")
-                }
-                catch {
-                    print(error)
-                }
-            }, errorBlock: { (error) in
-                print(error)
-            })
-        }) { (error) in
-            
-            print(error)
-        }
-    }
-    
-    
-    
-    func testEncryptionandDecryptionforInValidKey() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
         
         do {
-            encryptedAPIManager = try EncryptedAPIManager.init(key: "dafqwefgrth")
+            encryptedAPIManager = try EncryptedAPIManager.init(key: "")
         }
         catch {
-            XCTAssertEqual(error.localizedDescription, "badKeyLength", "")
+            //Throw an error for the empty key
             print(error)
-        }
-        
-        encryptedAPIManager.getEncryptedData(data: Data(), completionBlock: { (data) in
-            
-        }) { (error) in
-            
-            XCTAssertNotNil(error, "error should not be nil")
+            XCTAssertNotNil(error)
+            guard let aesError = error as? EncryptedAPIManager.Error else {
+                XCTFail("Unexpected error: \(error)")
+                return
+            }
+            XCTAssertEqual(aesError, .invalidKeySize, "invalidKeySize")
         }
     }
     
-    func testDecryptionforInValidInput() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testForInvalidKey() {
+        
+        do {
+            encryptedAPIManager = try EncryptedAPIManager.init(key: "InvalidKey")
+        }
+        catch {
+            //Throw an error for the Invalid key
+            print(error)
+            guard let aesError = error as? EncryptedAPIManager.Error else {
+                XCTFail("Unexpected error: \(error)")
+                return
+            }
+            XCTAssertEqual(aesError, .invalidKeySize, "invalidKeySize")
+        }
+    }
+    
+    func testEncryptedResponseDataMethodeForValidURL() {
         
         do {
             encryptedAPIManager = try EncryptedAPIManager.init(key: "FiugQTgPNwCWUY,VhfmM4cKXTLVFvHFe")
         }
         catch {
-            print(error)
         }
         
-        encryptedAPIManager.getDecryptedData(encrptedData: Data(), completionBlock: { (data) in
+        var request = URLRequest.init(url: URL.init(string: "https://api.github.com/gists/ac57abaea4faba3e3cb6bf45e733c670")!)
+        request.httpMethod = "get"
+        //Passing the urlRequest to encrypt API manager
+        encryptedAPIManager.encryptedAPIRequest(request: request) { (_ handler) in
             
-        }, errorBlock: { (error) in
-            XCTAssertNotNil(error, "error should not be nil")
-        })
+            //The handler contains the error, response, encrypted data
+            var handlerData = handler
+            let data = Data(bytes: &handlerData, count: MemoryLayout<APIHandler>.stride)
+            
+            XCTAssertNotNil(handler.data, "Data should not be nil")
+            XCTAssertNil(handler.error, "error should be nil")
+            XCTAssertNil(data, "data should NOT be nil")
+
+            //Passing the data to the decrypt
+            if let encrptedData = handler.data {
+                    //It returns the decrypted data for the given encrptedData
+                    self.encryptedAPIManager.getDecryptedData(encrptedData: encrptedData, completionBlock: { (data) in
+                        //Checking for the value in decrypted data wether it contains the data or not
+                        if !(data.isEmpty) {
+                            do {
+                                let object = try JSONSerialization.jsonObject(with: data, options: []) as? String
+                                XCTAssertNotNil(object, "Dict should not be nil")
+                            }
+                            catch {
+                            }
+                        }
+                    }, errorBlock: { (error) in
+                    })
+            }
+        }
     }
     
-    func testDecriptionforInValidValue() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    
+    func testEncryptionforEmptyInputData() {
         
         do {
-            encryptedAPIManager = try EncryptedAPIManager.init(key: "hfmM4cKXTLVFvHFe")
+            encryptedAPIManager = try EncryptedAPIManager.init(key: "FiugQTgPNwCWUY,VhfmM4cKXTLVFvHFe")
         }
         catch {
-            print(error)
         }
         
         encryptedAPIManager.getEncryptedData(data: Data(), completionBlock: { (data) in
+           
+        }) { (error) in
+            //Throw an error for the empty input data
+            print(error)
+            XCTAssertNotNil(error)
+            XCTAssertEqual(error, EncryptedAPIManager.Error.encryptionFailed, "Error should be encryptionFailed")
+        }
+    }
+    
+    func testDecryptionforEmptyEncryptedData() {
+        
+        do {
+            encryptedAPIManager = try EncryptedAPIManager.init(key: "VhfmM4cKXTLVFvHFe")
+        }
+        catch {
+        }
+        encryptedAPIManager.getDecryptedData(encrptedData: Data(), completionBlock: { (data) in
             
+        }, errorBlock: { (error) in
+            //Throw an error for the empty input encrptedData
+            print(error)
+            XCTAssertNotNil(error)
+            XCTAssertEqual(error, EncryptedAPIManager.Error.decryptionFailed, "Error should be decryptionFailed")
+        })
+    }
+    
+    func testEncryptionandDecryptionforInValidValue() {
+
+        do {
+            encryptedAPIManager = try EncryptedAPIManager.init(key: "FiugQTgPNwCWUY,VhfmM4cKXTLVFvHFe")
+        }
+        catch {
+        }
+        encryptedAPIManager.getEncryptedData(data: "Encrypted data".data(using: .utf8)!, completionBlock: { (data) in
+           //Passing the different key for testing.
+            do {
+                encryptedAPIManager = try EncryptedAPIManager.init(key: "VhfmM4cKXTLVFvHFe")
+            }
+            catch {
+            }
+            //Passing the data to decrypt
             encryptedAPIManager.getDecryptedData(encrptedData: data, completionBlock: { (data) in
-                
-                do {
-                    let _ = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                }
-                catch {
-                    
-                    XCTAssertNotNil(error, "error should not be nil")
-                }
+               
             }, errorBlock: { (error) in
+                //Throw an error for the different key decryptionFailed
                 print(error)
+                XCTAssertNotNil(error)
+                XCTAssertEqual(error, EncryptedAPIManager.Error.decryptionFailed, "decryptionFailed maybe due to different key")
             })
         }) { (error) in
             
             print(error)
         }
     }
-    
     
     func testPerformanceExample() {
         // This is an example of a performance test case.

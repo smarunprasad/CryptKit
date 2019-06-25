@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F4166AEA22C1A1BC00934E44 /* EncryptedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4166AE922C1A1BC00934E44 /* EncryptedAPIClient.swift */; };
+		F4166AEC22C1A8BE00934E44 /* EncryptManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4166AEB22C1A8BE00934E44 /* EncryptManager.swift */; };
 		F488E00822C0417C00BBC105 /* EncryptedAPIManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F488DFFE22C0417C00BBC105 /* EncryptedAPIManager.framework */; };
 		F488E00D22C0417C00BBC105 /* EncryptedAPIManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F488E00C22C0417C00BBC105 /* EncryptedAPIManagerTests.swift */; };
 		F488E00F22C0417C00BBC105 /* EncryptedAPIManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F488E00122C0417C00BBC105 /* EncryptedAPIManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -26,6 +27,7 @@
 
 /* Begin PBXFileReference section */
 		F4166AE922C1A1BC00934E44 /* EncryptedAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptedAPIClient.swift; sourceTree = "<group>"; };
+		F4166AEB22C1A8BE00934E44 /* EncryptManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptManager.swift; sourceTree = "<group>"; };
 		F488DFFE22C0417C00BBC105 /* EncryptedAPIManager.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EncryptedAPIManager.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F488E00122C0417C00BBC105 /* EncryptedAPIManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EncryptedAPIManager.h; sourceTree = "<group>"; };
 		F488E00222C0417C00BBC105 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				F488E00122C0417C00BBC105 /* EncryptedAPIManager.h */,
 				F488E01822C043D900BBC105 /* EncryptedAPIManager.swift */,
 				F4166AE922C1A1BC00934E44 /* EncryptedAPIClient.swift */,
+				F4166AEB22C1A8BE00934E44 /* EncryptManager.swift */,
 				F488E00222C0417C00BBC105 /* Info.plist */,
 			);
 			path = EncryptedAPIManager;
@@ -202,6 +205,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4166AEA22C1A1BC00934E44 /* EncryptedAPIClient.swift in Sources */,
+				F4166AEC22C1A8BE00934E44 /* EncryptManager.swift in Sources */,
 				F488E01922C043D900BBC105 /* EncryptedAPIManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

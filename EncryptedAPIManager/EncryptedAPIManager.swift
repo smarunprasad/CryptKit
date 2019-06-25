@@ -34,12 +34,12 @@ public class APIHandler {
 public class EncryptedAPIManager {
     
     //Variables
-    private var key: Data
-    private let ivSize: Int  = kCCBlockSizeAES128
-    private let options: CCOptions = CCOptions(kCCOptionPKCS7Padding)
+    var key: Data
+    var encryptManager: EncryptManager!
     
     //Init
     public init(key: String) throws {
+        //Checking for the key is empty or not
         guard !(key.isEmpty) else {
             throw Error.invalidKeySize
         }
@@ -53,6 +53,18 @@ public class EncryptedAPIManager {
         case generateRandomIVFailed
         case encryptionFailed
         case decryptionFailed
+    }
+    
+    func encriptionManagerInit() {
+        
+        do {
+            //To pass the key to encryptManager class for encryption.
+            let manager = try EncryptManager.init(key: self.key)
+            self.encryptManager = manager
+        }
+        catch {
+            
+        }
     }
 }
 
@@ -88,23 +100,23 @@ extension EncryptedAPIManager {
         return (isReachable && !needsConnection)
     }
     
-    public func getEncryptedResponseData(request: URLRequest, completionHandler:@escaping ((APIHandler) -> Void)) {
+    // This methode returns the encrypted data for the urlrequest send to it
+    public func encryptedAPIRequest(request: URLRequest, completionHandler:@escaping ((APIHandler) -> Void)) {
         
+        //API call using urlsession
         EncryptedAPIClient.shared.dataRequest(request: request) { (data, response, error) in
             
             guard let cryptData = data else {
                 return
             }
-            
             var encryptedData = Data()
+            //Converting the data from the response to encrytped data.
             self.getEncryptedData(data: cryptData, completionBlock: { (data) in
-                
                 encryptedData = data
-                
             }, errorBlock: { (error) in
-                
             })
             
+            //APIHandler is used to pass the error, response & encrypted data to completionHandler
             let handler: APIHandler = APIHandler.init(error: error, response: response, data: encryptedData)
             completionHandler(handler)
         }
@@ -114,6 +126,10 @@ extension EncryptedAPIManager {
     //Call this methode in your class it will return the data in the encripted formate
     public func getEncryptedData(data: Data, completionBlock: (Data) -> Void, errorBlock: (Error) -> Void) {
         
+        guard !(data.isEmpty) else {
+            errorBlock(Error.encryptionFailed)
+            return
+        }
         do {
             //It returns the device data in encrypted formate.
             let encrptedData = try self.encrypt(data)
@@ -124,8 +140,13 @@ extension EncryptedAPIManager {
     }
     
     //To decrypt, pass the encrypted value with Key & inputVector values which is used for the encrytion.
-    public func getDecryptedData(encrptedData:Data, completionBlock: (Data) -> Void, errorBlock: (Error) -> Void) {
+    public func getDecryptedData(encrptedData: Data, completionBlock: (Data) -> Void, errorBlock: (Error) -> Void) {
         
+        guard !(encrptedData.isEmpty) else {
+            errorBlock(Error.decryptionFailed)
+            return
+        }
+
         do {
             //It returns the decrypted data for the given encrptedData
             let decrptedData = try self.decrypt(encrptedData)
@@ -136,139 +157,15 @@ extension EncryptedAPIManager {
     }
 }
 
-//MARK: Encrption & Decryption private methods
-extension EncryptedAPIManager {
-    
-    //Used to encrypt the data based on the key & inputVector values
-    //This will called for the Encrypt protocal function for encrypt or decrypt
-    private func localEncrypt(_ data: Data) throws -> Data {
-        
-        let dataToEncrypt = data
-        
-        let bufferSize: Int = ivSize + dataToEncrypt.count + kCCBlockSizeAES128
-        var buffer = Data(count: bufferSize)
-        try generateRandomIV(for: &buffer)
-        
-        var numberBytesEncrypted: Int = 0
-        
-        do {
-            try key.withUnsafeBytes { keyBytes in
-                try dataToEncrypt.withUnsafeBytes { dataToEncryptBytes in
-                    try buffer.withUnsafeMutableBytes { bufferBytes in
-                        
-                        guard let keyBytesBaseAddress = keyBytes.baseAddress,
-                            let dataToEncryptBytesBaseAddress = dataToEncryptBytes.baseAddress,
-                            let bufferBytesBaseAddress = bufferBytes.baseAddress else {
-                                throw Error.encryptionFailed
-                        }
-                        
-                        let cryptStatus: CCCryptorStatus = CCCrypt( // Stateless, one-shot encrypt operation
-                            CCOperation(kCCEncrypt),                // op: CCOperation
-                            CCAlgorithm(kCCAlgorithmAES),           // alg: CCAlgorithm
-                            options,                                // options: CCOptions
-                            keyBytesBaseAddress,                    // key: the "password"
-                            key.count,                              // keyLength: the "password" size
-                            bufferBytesBaseAddress,                 // iv: Initialization Vector
-                            dataToEncryptBytesBaseAddress,          // dataIn: Data to encrypt bytes
-                            dataToEncryptBytes.count,               // dataInLength: Data to encrypt size
-                            bufferBytesBaseAddress + ivSize,        // dataOut: encrypted Data buffer
-                            bufferSize,                             // dataOutAvailable: encrypted Data buffer size
-                            &numberBytesEncrypted                   // dataOutMoved: the number of bytes written
-                        )
-                        
-                        guard cryptStatus == CCCryptorStatus(kCCSuccess) else {
-                            throw Error.encryptionFailed
-                        }
-                    }
-                }
-            }
-            
-        } catch {
-            throw Error.encryptionFailed
-        }
-        
-        let encryptedData: Data = buffer[..<(numberBytesEncrypted + ivSize)]
-        return encryptedData
-    }
-    
-    private func localDecrypt(_ data: Data) throws -> Data {
-        
-        let bufferSize: Int = data.count - ivSize
-        var buffer = Data(count: bufferSize)
-        
-        var numberBytesDecrypted: Int = 0
-        
-        do {
-            try key.withUnsafeBytes { keyBytes in
-                try data.withUnsafeBytes { dataToDecryptBytes in
-                    try buffer.withUnsafeMutableBytes { bufferBytes in
-                        
-                        guard let keyBytesBaseAddress = keyBytes.baseAddress,
-                            let dataToDecryptBytesBaseAddress = dataToDecryptBytes.baseAddress,
-                            let bufferBytesBaseAddress = bufferBytes.baseAddress else {
-                                throw Error.encryptionFailed
-                        }
-                        
-                        let cryptStatus: CCCryptorStatus = CCCrypt( // Stateless, one-shot encrypt operation
-                            CCOperation(kCCDecrypt),                // op: CCOperation
-                            CCAlgorithm(kCCAlgorithmAES128),        // alg: CCAlgorithm
-                            options,                                // options: CCOptions
-                            keyBytesBaseAddress,                    // key: the "password"
-                            key.count,                              // keyLength: the "password" size
-                            dataToDecryptBytesBaseAddress,          // iv: Initialization Vector
-                            dataToDecryptBytesBaseAddress + ivSize, // dataIn: Data to decrypt bytes
-                            bufferSize,                             // dataInLength: Data to decrypt size
-                            bufferBytesBaseAddress,                 // dataOut: decrypted Data buffer
-                            bufferSize,                             // dataOutAvailable: decrypted Data buffer size
-                            &numberBytesDecrypted                   // dataOutMoved: the number of bytes written
-                        )
-                        
-                        guard cryptStatus == CCCryptorStatus(kCCSuccess) else {
-                            throw Error.decryptionFailed
-                        }
-                    }
-                }
-            }
-        } catch {
-            throw Error.encryptionFailed
-        }
-        
-        let decryptedData: Data = buffer[..<numberBytesDecrypted]
-        return decryptedData
-    }
-    
-    
-    private func generateRandomIV(for data: inout Data) throws {
-        
-        try data.withUnsafeMutableBytes { dataBytes in
-            
-            guard let dataBytesBaseAddress = dataBytes.baseAddress else {
-                throw Error.generateRandomIVFailed
-            }
-            print("dataBytesBaseAddress - \(dataBytesBaseAddress)")
-            
-            let status: Int32 = SecRandomCopyBytes(
-                kSecRandomDefault,
-                kCCBlockSizeAES128,
-                dataBytesBaseAddress
-            )
-            print("sta- \(status)")
-            
-            guard status == 0 else {
-                throw Error.generateRandomIVFailed
-            }
-        }
-    }
-}
 extension EncryptedAPIManager: Encrypter {
     
     public func encrypt(_ data: Data) throws -> Data {
         
-        return try localEncrypt(data)
+        return try self.encryptManager.localEncrypt(data)
     }
     
     public func decrypt(_ encrypted: Data) throws -> Data {
         
-        return try localDecrypt(encrypted)
+        return try self.encryptManager.localDecrypt(encrypted)
     }
 }

@@ -16,9 +16,9 @@ final class EncryptedAPIClient {
     
     func dataRequest(request: URLRequest, completionHandler:@escaping ((Data?, URLResponse?, Error?) -> Void)) {
         
- 
+        // API call using dataTask
         let dataTask = session.dataTask(with: request as URLRequest) { (data, response, error) in
-            
+            //Passing the (data, response, error) to completionHandler
             completionHandler(data, response, error)
         }
         dataTask.resume()
