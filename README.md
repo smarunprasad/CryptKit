@@ -4,7 +4,7 @@
   
 # Installation
 
-    Download the application expand the product menu and drag the framwork to your application.
+    Download the application expand the product menu and drag the framework to your application.
         
     Import the CryptKit to your class and use it.
   
@@ -49,9 +49,9 @@
     
  # Approach
  
-     Initially i called the API from the framwork and pass the data, error, response in model object.
+     Initially i called the API from the framework and pass the data, error, response in model object.
      
-     Later i desided to slit the API call & Cryption.
+     Later i decided to slit the API call & Cryption.
      
      So i kept the Encryption & Decryption in CryptKit and API call in test Project.
      
@@ -60,8 +60,8 @@
  
  # Result
      
-     By passing the unencrypted data to the methode will return the Encrypted data.
+     By passing the unencrypted data to the method will return the Encrypted data.
      
-     By passing the encrypted data to the methode will return the decrypted data.
+     By passing the encrypted data to the method will return the decrypted data.
      
     
