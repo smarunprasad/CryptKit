@@ -1,13 +1,11 @@
 # CryptKit
 
-    This framework is used to encrypt & decrypt the data
+    This framework encrypts & decrypts the data
   
 # Installation
 
     Download the application expand the product menu and drag the framwork to your application.
-    
-    Add the framwork to the Embedded framwork tab in Generaal tab.
-    
+        
     Import the CryptKit to your class and use it.
   
   
@@ -51,18 +49,19 @@
     
  # Approach
  
-     Initially i tried to call the API inside the library and pass the data, error, response in model object.
+     Initially i called the API from the framwork and pass the data, error, response in model object.
      
-     Then i feel to slit the API call & Cryption.
+     Later i desided to slit the API call & Cryption.
      
-     So i keep the Encryption & Decryption in CryptKit and the API call the test Project
+     So i kept the Encryption & Decryption in CryptKit and API call in test Project.
      
-     Then write the test case for the Encryption & Decryption in all the cases.
+     Wrote some test case for Encryption & Decryption.
      
  
  # Result
      
-     This Kit returns the Encrypted data if you send the data to it.
+     By passing the unencrypted data to the methode will return the Encrypted data.
      
-     Returns the decrypted data if you send the Encrypted data. 
+     By passing the encrypted data to the methode will return the decrypted data.
+     
     
