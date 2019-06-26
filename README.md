@@ -49,5 +49,20 @@
   
 
     
-    
+ # Approach
+ 
+     Initially i tried to call the API inside the library and pass the data, error, response in model object.
+     
+     Then i feel to slit the API call & Cryption.
+     
+     So i keep the Encryption & Decryption in CryptKit and the API call the test Project
+     
+     Then write the test case for the Encryption & Decryption in all the cases.
+     
+ 
+ # Result
+     
+     This Kit returns the Encrypted data if you send the data to it.
+     
+     Returns the decrypted data if you send the Encrypted data. 
     
